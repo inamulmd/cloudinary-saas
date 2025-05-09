@@ -50,13 +50,14 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
+        //Creating the WRITABLE STREAM
          const result = await new Promise<CloudinaryUploadResult>(
             (resolve, reject) => {
               const uploadStream =  cloudinary.uploader.upload_stream(
                     {   resources_type:"video",
                         folder:"video-uploads",
                         transformation: [
-                            {quality: "auto", feetch_format:"mp4"},
+                            {quality: "auto", fetch_format:"mp4"},
                         ]
                     },
                     (error, result) => {
@@ -64,9 +65,11 @@ export async function POST(request: NextRequest) {
                         else resolve(result as CloudinaryUploadResult);
                     }
                 )
-                uploadStream.end(buffer);
+                uploadStream.end(buffer); // ⬅️ Sends the buffer to Cloudinary
             }
         )
+        
+        //Once Cloudinary gives back the video info, you store it in the database:
       const video = await prisma.video.create({
           data : {
                 title,
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
     }catch(error) {
        console.log("UPload image failed", error)
        return NextResponse.json({error:"Upload video failed"},{status:500})
-    }finally [
+    }finally {
         await prisma .$disconnect()
-    ]
+    }
 }
