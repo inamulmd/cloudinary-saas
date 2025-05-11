@@ -60,7 +60,7 @@ export default function SocialShare() {
       if(!imageRef.current) return;
 
       fetch(imageRef.current.src)
-      .then((response) => response.blob())
+      .then((response) => response.blob()) // get binary object
       .then((blob) => {
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement("a");
@@ -119,10 +119,35 @@ export default function SocialShare() {
                </div>
 
                  <div className="mt-6 relative">
-                   <h3 className="text-lg font-semibold mb-2">Preview</h3>
-                   <div className>
+                   <h3 className="text-lg font-semibold mb-2">Preview:</h3>
+                   <div className="flex justify-center">
+                      {isTransforming && (
+                        <div className='absoluteinset-0 flex items-center justify-center bg-base-100
+                        bg-opacity-50 z-10'>
+                          <span className='loading loading-spinner loading-lg '></span>
+                        </div>
+                      )}
+                       <CldImage
+                             width={socialFormats[selectedFormat].width}
+                             height={socialFormats[selectedFormat].height}
+                             src={uploadedImage}
+                             sizes="100vw"
+                             alt="transformed image"
+                             crop="fill"
+                             aspectRatio={socialFormats[selectedFormat].aspectRatio}
+                             gravity='AUTO'
+                             ref={imageRef} 
+                             onLoad={() => setIsTransforming(false)}
+                           />
 
                    </div>
+                 </div>
+
+                 <div className="card-actions justify-end mt-6">
+                   <button className="btn btn-primary" onClick={handleDownload}>
+                    Download for {selectedFormat}
+                   </button>
+
                  </div>
              </div>
            )

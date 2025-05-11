@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         const file = formData.get("file") as File | null;
 
         if(!file){
-            return NextResponse.json({eror:"File not found"}, {status:400})
+            return NextResponse.json({error:"File not found"}, {status:400})
         }
 
         const bytes = await file.arrayBuffer();
